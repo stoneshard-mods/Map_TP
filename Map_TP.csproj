@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Map_TP</AssemblyName>
+    <RootNamespace>MapTP</RootNamespace>
+    <Nullable>disable</Nullable>
+    <!-- The packager ignores this csproj; it is only for IDE compilation.
+         打包器不读 csproj；这里只用于 IDE 编译。
+         Convention: keep ImplicitUsings disabled and never use System.Linq explicitly.
+         约定：不要开 ImplicitUsings，也不要显式 using System.Linq。
+         Otherwise the mod binds to System.Linq, Version=10.0.0.0 (net10 LINQ), and the
+         stock MSL (net6.0) throws FileNotFoundException when loading it.
+         否则 mod 会被绑定到 System.Linq, Version=10.0.0.0（net10 的 LINQ），
+         原版 MSL 是 net6.0 进程，加载时找不到该程序集会报 FileNotFoundException。
+         Only use netstandard base APIs (List<T>, string.Join, foreach, etc.).
+         只用 netstandard 基础 API（List<T>、string.Join、foreach 等）。 -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Path to the ModShardLauncher directory (install dir or the repo's publish/).
+         指向启动器目录（安装目录或仓库的 publish/）。 -->
+    <MslDir Condition="'$(MslDir)' == ''">$(LOCALAPPDATA)\Programs\ModShardLauncher</MslDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ModShardLauncher">
+      <HintPath>$(MslDir)\ModShardLauncher.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UndertaleModLib">
+      <HintPath>$(MslDir)\UndertaleModLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
