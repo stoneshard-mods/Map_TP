@@ -18,10 +18,24 @@
 ## 交互与界面
 
 - **左键单击**可通行格打开菜单；中键拖拽地图、右键自定义标记保持游戏原样；
-- 菜单复用游戏右键菜单的边框精灵（`s_gui_context_*` + `s_point`），字号为原生 0.5 倍，宽 156px；
-- 菜单项：左上 / 右上 / 左下 / 右下 / 取消，标题显示目标格坐标；
-- 左上角一行小字「左键：传送 / LMB」，提示/错误也显示在左上角；
-- 传送过程中屏幕上方显示「传送中…」。
+- 菜单复用游戏右键菜单的边框精灵（`s_gui_context_*` + `s_point`），字号为原生 0.5 倍，宽 190px；
+- 菜单项（英文用完整单词，不再用 TL / TR / BL / BR 缩写，中文同样用完整词）：
+  `Top-left corner / 左上角`、`Top-right corner / 右上角`、`Bottom-left corner / 左下角`、
+  `Bottom-right corner / 右下角`、`Cancel / 取消`；
+  标题显示目标格坐标；
+- 左上角一行小字（`Left-click: teleport` / `左键：传送`），提示/错误也显示在左上角；
+- 传送过程中屏幕上方显示 `Teleporting…` / `传送中…`。
+
+## 界面语言（中 / 英）
+
+语言在**启动器的游戏内设置**里切换（与 Rusty 系列模组同一套机制，不再占用传送菜单的行）：
+
+- 游戏内 `ESC → 设置 → MODS` 页 → `Map_TP` 分组 → `Language / 语言` 下拉框：`Auto` / `English` / `中文`；
+- `Auto` 跟随系统语言（`os_get_language()`，`zh*` 用中文，其余用英文）；
+- 选择由启动器的模组菜单系统保存到 `%LOCALAPPDATA%\StoneShard\msl_menu_mod.ini`（`[Map_TP]` 段），
+  对应全局变量 `global.msl_maptp_lang_choice`，不需要额外的配置文件；
+- 实现方式：`MapTP.cs` 中 `Msl.AddMenu("Map_TP", new UIComponent("Language / 语言", "msl_maptp_lang_choice", UIComponentType.ComboBox, new[] { "Auto", "English", "中文" }))`；
+- 所有界面文本都走 `scr_msl_maptp_tr(key)`，新增文案只需在 `Gml/scr_msl_maptp_tr.gml` 里加一行对照。
 
 ## 已知限制
 
@@ -60,6 +74,8 @@ Map_TP.csproj
 MapTP.cs                          # 注入入口（对象 / 事件 / 脚本函数 / o_globalmap End Step 钩子）
 lib/ModShardLauncher.dll          # 内置引用 DLL（编译用）
 lib/UndertaleModLib.dll           # 内置引用 DLL（编译用）
+Gml/scr_msl_maptp_lang.gml        # 语言判定（设置里的选择 → 系统语言）
+Gml/scr_msl_maptp_tr.gml          # 中英文本表
 Gml/scr_msl_maptp_cell.gml        # 屏幕坐标 → 世界格
 Gml/scr_msl_maptp_can_enter.gml   # 目标格可传送判断
 Gml/scr_msl_maptp_menu_index.gml  # 菜单命中测试
@@ -67,4 +83,20 @@ Gml/scr_msl_maptp_begin.gml       # 直接换房 + 落点
 Gml/o_msl_maptp_Create.gml        # 控制器状态
 Gml/o_msl_maptp_Step.gml          # 落点修正 + 输入
 Gml/o_msl_maptp_Draw_64.gml       # 菜单绘制
+```
+
+## 打包与验证（CLI）
+
+用**已安装**的启动器自带的 CLI 无头编译与打补丁（默认安装到 `%LOCALAPPDATA%\Programs\ModShardLauncher`）：
+
+```powershell
+$cli = "$env:LOCALAPPDATA\Programs\ModShardLauncher\ModShardLauncher.CLI.exe"
+
+# 编译源码为 .sml（输出到 %LOCALAPPDATA%\ModShardLauncher\Mods）
+& $cli compile --source "$env:LOCALAPPDATA\ModShardLauncher\ModSources\Map_TP"
+
+# 从原版 data.win 打补丁，检查 GML 是否能正确装配
+& $cli patch --data "C:\Program Files (x86)\Steam\steamapps\common\Stoneshard\original.win" `
+             --output "C:\Program Files (x86)\Steam\steamapps\common\Stoneshard\original_patched.win" `
+             --enable Map_TP
 ```

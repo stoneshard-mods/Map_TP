@@ -27,7 +27,7 @@ function scr_msl_maptp_begin(_gxIn, _gyIn, _cornerIn)
     // 必须处于世界地图中。
     if (global.playerGridX == -4 || global.playerGridY == -4)
     {
-        notice = "当前不在世界地图 / not on world map";
+        notice = scr_msl_maptp_tr("not_map");
         noticeTimer = 120;
         return;
     }
@@ -36,14 +36,14 @@ function scr_msl_maptp_begin(_gxIn, _gyIn, _cornerIn)
     // 已在该目标格：无需传送。
     if (global.playerGridX == _gx && global.playerGridY == _gy)
     {
-        notice = "已经在这一格 / already here";
+        notice = scr_msl_maptp_tr("here");
         noticeTimer = 120;
         return;
     }
 
     if (!scr_msl_maptp_can_enter(_gx, _gy))
     {
-        notice = "该格无法传送 / blocked";
+        notice = scr_msl_maptp_tr("blocked");
         noticeTimer = 120;
         return;
     }
@@ -56,7 +56,7 @@ function scr_msl_maptp_begin(_gxIn, _gyIn, _cornerIn)
 
     if (targetRoom <= 0)
     {
-        notice = "目标房间无效 / bad room";
+        notice = scr_msl_maptp_tr("bad_room");
         noticeTimer = 120;
         return;
     }

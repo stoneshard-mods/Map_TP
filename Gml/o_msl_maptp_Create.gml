@@ -14,9 +14,12 @@ menuGridX = -1;
 menuGridY = -1;
 menuPX = 0;
 menuPY = 0;
-menuW = 156;
+menuW = 190;
 menuRowH = 20;
 menuHeaderH = 16;
+// Rows: four corners + cancel. The UI language is chosen in the game settings (MODS tab).
+// 行数：四个角落 + 取消。界面语言在游戏设置里选择（MODS 页）。
+menuRows = 5;
 
 // Mouse press tracking (to tell a click from a drag)
 // 鼠标按下状态跟踪（用于区分点击与拖动）

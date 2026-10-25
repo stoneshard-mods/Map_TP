@@ -10,7 +10,7 @@ var _camH = global.cameraHeight;
 // 传送进行中：屏幕上方显示状态文字，跳过菜单绘制。
 if (phase != -1)
 {
-    scr_drawText(_camX + (_camW / 2), _camY + 60, "传送中… / Teleporting…", make_color_rgb(235, 215, 165), 1, 1, global.f_digits, 0.5, 1);
+    scr_drawText(_camX + (_camW / 2), _camY + 60, scr_msl_maptp_tr("teleporting"), make_color_rgb(235, 215, 165), 1, 1, global.f_digits, 0.5, 1);
     exit;
 }
 
@@ -26,12 +26,12 @@ if (noticeTimer > 0 && notice != "")
     scr_drawText(_camX + 12, _camY + 32, notice, make_color_rgb(225, 110, 110), 0, 1, global.f_dmg, 0.5, 1);
 }
 
-scr_drawText(_camX + 12, _camY + 16, "左键：传送 / LMB", make_color_rgb(190, 180, 160), 0, 1, global.f_dmg, 0.5, 0.7);
+scr_drawText(_camX + 12, _camY + 16, scr_msl_maptp_tr("hint"), make_color_rgb(190, 180, 160), 0, 1, global.f_dmg, 0.5, 0.7);
 
 if (!menuOpen)
     exit;
 
-var _panelH = 30 + menuHeaderH + menuRowH * 5;
+var _panelH = 30 + menuHeaderH + menuRowH * menuRows;
 var _x = menuPX;
 var _y = menuPY;
 var _w = menuW;
@@ -52,15 +52,24 @@ draw_sprite(s_gui_context_botright, 0, _x + _w - 1, _y + _panelH - 14);
 
 // Title (target tile coordinates)
 // 标题（目标格坐标）
-scr_drawText(_x + 10, _y + 21, "传送 " + string(menuGridX) + "," + string(menuGridY), make_color_rgb(160, 150, 130), 0, 1, global.f_dmg, 0.5, 1);
+scr_drawText(_x + 10, _y + 21, scr_msl_maptp_tr("title") + " " + string(menuGridX) + "," + string(menuGridY), make_color_rgb(160, 150, 130), 0, 1, global.f_dmg, 0.5, 1);
 
-var _labels = ["左上 / TL", "右上 / TR", "左下 / BL", "右下 / BR", "取消 / Cancel"];
+// Full-word labels instead of TL / TR / BL / BR abbreviations.
+// 使用完整的单词标签，不再用 TL / TR / BL / BR 这类缩写。
+var _labels =
+[
+    scr_msl_maptp_tr("corner_tl"),
+    scr_msl_maptp_tr("corner_tr"),
+    scr_msl_maptp_tr("corner_bl"),
+    scr_msl_maptp_tr("corner_br"),
+    scr_msl_maptp_tr("cancel")
+];
 var _hover = scr_msl_maptp_menu_index(global.guiMouseX, global.guiMouseY);
 var _rowY0 = _y + 12 + menuHeaderH;
 
-// Five rows; highlight the one currently under the mouse.
-// 共 5 行；高亮鼠标当前所在行。
-for (var _i = 0; _i < 5; _i++)
+// menuRows rows; highlight the one currently under the mouse.
+// 共 menuRows 行；高亮鼠标当前所在行。
+for (var _i = 0; _i < menuRows; _i++)
 {
     var _rowY = _rowY0 + _i * menuRowH;
 

@@ -20,9 +20,9 @@ public class MapTP : Mod
 {
     public override string Name => "Map_TP";
     public override string Author => "Pixel32E-QQ:3566723459";
-    public override string Description => "大地图左键打开二级菜单，按落点（房间四角）传送到选中的世界格";
-    public override string ShortDesc => "Teleport from the world map through real room transitions";
-    public override string Version => "v0.3.1.0";
+    public override string Description => "大地图左键打开二级菜单，按落点（房间四角）传送到选中的世界格；菜单支持中/英双语";
+    public override string ShortDesc => "Teleport from the world map through real room transitions (Chinese/English UI)";
+    public override string Version => "v0.4.0.0";
 
     // Keep the controller alive while the world map is open.
     // 打开大地图期间保证控制器实例存在。
@@ -36,6 +36,10 @@ public class MapTP : Mod
     {
         // Register the global script functions as GML functions, like the game's own scr_* ones.
         // 把全局脚本函数注册成 GML 函数（与游戏自带的 scr_* 一样）。
+        // Order matters: a function must exist before another one calls it.
+        // 顺序有影响：被调用的函数必须先注册。
+        Msl.AddFunction(Code("scr_msl_maptp_lang.gml"), "scr_msl_maptp_lang");
+        Msl.AddFunction(Code("scr_msl_maptp_tr.gml"), "scr_msl_maptp_tr");
         Msl.AddFunction(Code("scr_msl_maptp_cell.gml"), "scr_msl_maptp_cell");
         Msl.AddFunction(Code("scr_msl_maptp_can_enter.gml"), "scr_msl_maptp_can_enter");
         Msl.AddFunction(Code("scr_msl_maptp_menu_index.gml"), "scr_msl_maptp_menu_index");
@@ -51,6 +55,19 @@ public class MapTP : Mod
         // While the map is open, its End Step keeps the controller instance alive.
         // 大地图打开期间由 o_globalmap 的 End Step 保证控制器存在。
         AddMapEndStep();
+
+        // UI language picker in the launcher's in-game settings (MODS tab), the same mechanism
+        // the Rusty mods use: a combobox bound to global.msl_maptp_lang_choice and persisted in
+        // msl_menu_mod.ini, so no separate settings file is needed.
+        // 界面语言选择放进启动器的游戏内设置（MODS 页），机制与 Rusty 系列模组相同：
+        // 下拉框绑定 global.msl_maptp_lang_choice，选择存进 msl_menu_mod.ini，不需要单独配置文件。
+        Msl.AddMenu(
+            "Map_TP",
+            new UIComponent(
+                "Language / 语言",
+                "msl_maptp_lang_choice",
+                UIComponentType.ComboBox,
+                new[] { "Auto", "English", "中文" }));
     }
 
     // Make sure the controller gets created: hook o_globalmap's End Step, falling back to

@@ -60,7 +60,7 @@ if (phase == 4)
     }
     else if (phaseTimer > 900)
     {
-        notice = "传送超时 / teleport timeout";
+        notice = scr_msl_maptp_tr("timeout");
         noticeTimer = 180;
         phase = -1;
         phaseTimer = 0;
@@ -99,8 +99,8 @@ if (menuOpen)
     {
         var _index = scr_msl_maptp_menu_index(global.guiMouseX, global.guiMouseY);
 
-        // Rows 0-3 are the four corners; clicking anywhere else closes the menu.
-        // 第 0-3 行为四个角落；点击其它区域则关闭菜单。
+        // Rows 0-3 are the four corners, row 4 cancels; clicking anywhere else closes the menu.
+        // 第 0-3 行为四个角落，第 4 行取消；点击其它区域则关闭菜单。
         if (_index >= 0 && _index <= 3)
         {
             scr_msl_maptp_begin(menuGridX, menuGridY, _index);
@@ -151,7 +151,7 @@ if (!_inBounds)
 
 if (!_can)
 {
-    notice = "该格无法传送 / blocked";
+    notice = scr_msl_maptp_tr("blocked");
     noticeTimer = 90;
     exit;
 }
@@ -172,6 +172,6 @@ var _camX = camera_get_view_x(global.cameraGUI);
 var _camY = camera_get_view_y(global.cameraGUI);
 
 menuPX = clamp(global.guiMouseX + 8, _camX + 8, max(_camX + 8, _camX + global.cameraWidth - menuW - 8));
-menuPY = clamp(global.guiMouseY + 8, _camY + 8, max(_camY + 8, _camY + global.cameraHeight - (30 + menuHeaderH + menuRowH * 5) - 8));
+menuPY = clamp(global.guiMouseY + 8, _camY + 8, max(_camY + 8, _camY + global.cameraHeight - (30 + menuHeaderH + menuRowH * menuRows) - 8));
 menuOpen = true;
 justOpened = true;
