@@ -26,16 +26,21 @@
 - 左上角一行小字（`Left-click: teleport` / `左键：传送`），提示/错误也显示在左上角；
 - 传送过程中屏幕上方显示 `Teleporting…` / `传送中…`。
 
-## 界面语言（中 / 英）
+## 界面语言（中 / 英 / 俄 / 日 / 韩）
 
 语言在**启动器的游戏内设置**里切换（与 Rusty 系列模组同一套机制，不再占用传送菜单的行）：
 
-- 游戏内 `ESC → 设置 → MODS` 页 → `Map_TP` 分组 → `Language / 语言` 下拉框：`Auto` / `English` / `中文`；
-- `Auto` 跟随系统语言（`os_get_language()`，`zh*` 用中文，其余用英文）；
+- 游戏内 `ESC → 设置 → MODS` 页 → `Map_TP` 分组 → `Language / 语言` 下拉框：
+  `Auto` / `English` / `中文` / `Русский` / `日本語` / `한국어`；
+- `Auto` 跟随系统语言（`os_get_language()`：`zh*` / `ru*` / `ja*` / `ko*` 对应中俄日韩，其余英文）；
 - 选择由启动器的模组菜单系统保存到 `%LOCALAPPDATA%\StoneShard\msl_menu_mod.ini`（`[Map_TP]` 段），
   对应全局变量 `global.msl_maptp_lang_choice`，不需要额外的配置文件；
-- 实现方式：`MapTP.cs` 中 `Msl.AddMenu("Map_TP", new UIComponent("Language / 语言", "msl_maptp_lang_choice", UIComponentType.ComboBox, new[] { "Auto", "English", "中文" }))`；
-- 所有界面文本都走 `scr_msl_maptp_tr(key)`，新增文案只需在 `Gml/scr_msl_maptp_tr.gml` 里加一行对照。
+- 实现方式：`MapTP.cs` 中 `Msl.AddMenu(...)` 的 `UIComponent(..., UIComponentType.ComboBox, new[] { "Auto", "English", "中文", "Русский", "日本語", "한국어" })`；
+- 所有界面文本都走 `scr_msl_maptp_tr(key)`，13 条文案 × 5 语言都在 `Gml/scr_msl_maptp_tr.gml`，新增语言只需在那里加一个分支。
+
+> 字体提示：菜单用游戏自带字体绘制（`global.f_dmg`）。该字体含完整拉丁与西里尔字形（俄文没问题），
+> 中日韩字形覆盖取决于当前 `data.win` 里的字体资源；若某种语言的文字显示为空白，说明该 `data.win` 的字体缺这些字形，
+> 需要另外注入字体资源才能显示。
 
 ## 已知限制
 

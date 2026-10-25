@@ -67,7 +67,7 @@ public class MapTP : Mod
                 "Language / 语言",
                 "msl_maptp_lang_choice",
                 UIComponentType.ComboBox,
-                new[] { "Auto", "English", "中文" }));
+                new[] { "Auto", "English", "中文", "Русский", "日本語", "한국어" }));
     }
 
     // Make sure the controller gets created: hook o_globalmap's End Step, falling back to
