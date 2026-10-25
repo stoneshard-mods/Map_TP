@@ -16,18 +16,17 @@
          Only use netstandard base APIs (List<T>, string.Join, foreach, etc.).
          只用 netstandard 基础 API（List<T>、string.Join、foreach 等）。 -->
     <ImplicitUsings>disable</ImplicitUsings>
-    <!-- Path to the ModShardLauncher directory (install dir or the repo's publish/).
-         指向启动器目录（安装目录或仓库的 publish/）。 -->
-    <MslDir Condition="'$(MslDir)' == ''">$(LOCALAPPDATA)\Programs\ModShardLauncher</MslDir>
   </PropertyGroup>
 
+  <!-- Bundled references so the project builds out of the box after a clone (no launcher install needed).
+       内置引用 DLL，克隆后可直接编译（无需预装启动器）。 -->
   <ItemGroup>
     <Reference Include="ModShardLauncher">
-      <HintPath>$(MslDir)\ModShardLauncher.dll</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)lib\ModShardLauncher.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UndertaleModLib">
-      <HintPath>$(MslDir)\UndertaleModLib.dll</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)lib\UndertaleModLib.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
