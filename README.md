@@ -34,11 +34,32 @@
 2. 打开**原版**数据文件（当前游戏目录里是 `original.win`），启用 `Map_TP`，打补丁并保存；
 3. 进游戏按 M 打开大地图，左键点格子。
 
+## 编译（dotnet build）
+
+仓库已内置以下两个引用 DLL，克隆后无需安装启动器即可直接编译：
+
+- `lib/ModShardLauncher.dll`
+- `lib/UndertaleModLib.dll`
+
+**来源**：从 ModShardLauncher（Avalonia 版）安装目录（默认 `%LOCALAPPDATA%\Programs\ModShardLauncher`）复制而来；二者均为 GPL-3.0 组件，与本仓库的 GPL-3.0 许可兼容。`Map_TP.csproj` 通过 `$(MSBuildThisFileDirectory)lib\...` 引用它们，与本机安装路径无关。
+
+编译：
+
+```bash
+dotnet build Map_TP.csproj
+```
+
+输出：`bin/<Configuration>/net10.0/Map_TP.dll`。
+
+注意：`Map_TP.csproj` 仅供 IDE / `dotnet` 编译使用，实际生成 `.sml` 由启动器打包完成；内置 DLL 与启动器 API 绑定，启动器升级后若接口变动需同步更新 `lib/` 内文件。
+
 ## 文件
 
 ```
 Map_TP.csproj
 MapTP.cs                          # 注入入口（对象 / 事件 / 脚本函数 / o_globalmap End Step 钩子）
+lib/ModShardLauncher.dll          # 内置引用 DLL（编译用）
+lib/UndertaleModLib.dll           # 内置引用 DLL（编译用）
 Gml/scr_msl_maptp_cell.gml        # 屏幕坐标 → 世界格
 Gml/scr_msl_maptp_can_enter.gml   # 目标格可传送判断
 Gml/scr_msl_maptp_menu_index.gml  # 菜单命中测试
