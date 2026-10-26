@@ -22,15 +22,17 @@ public class MapTP : Mod
     public override string Author => "Pixel32E-QQ:3566723459";
     public override string Description => "大地图左键打开二级菜单，按落点（房间四角）传送到选中的世界格；菜单支持中/英双语";
     public override string ShortDesc => "Teleport from the world map through real room transitions (Chinese/English UI)";
-    public override string Version => "v0.4.0.0";
+    public override string Version => "v0.5.0.0";
 
     // Keep the controller alive while the world map is open.
     // 打开大地图期间保证控制器实例存在。
     // (Appended to o_globalmap's End Step = Step subtype 2, a structured event independent of text order.)
     // （挂到 o_globalmap 的 End Step，即 Step 子类型 2，是结构化事件，不依赖文本插入位置。）
+    // No diagnostics here: this runs every frame while the map is open, and the old
+    // file_text write produced one line per frame in maptp_diag.txt.
+    // 这里不再写诊断：该事件在打开地图期间每帧执行，旧的写文件会每帧追加一行。
     private const string CreateController =
-        "if (!instance_exists(o_msl_maptp)) instance_create_depth(-50, -50, -14900, o_msl_maptp);\n" +
-        "var _f = file_text_open_append(\"maptp_diag.txt\"); file_text_write_string(_f, \"map open: controller create checked\\n\"); file_text_close(_f);";
+        "if (!instance_exists(o_msl_maptp)) instance_create_depth(-50, -50, -14900, o_msl_maptp);";
 
     public override void PatchMod()
     {

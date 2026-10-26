@@ -69,6 +69,26 @@ if (phase == 4)
     exit;
 }
 
+// ---- Legacy repair: stale dungeon floor counter -----------------------------------
+// ---- 旧存档修复：地表残留的地牢层数 ------------------------------------------------
+// Older builds left global.floor_counter at the dungeon floor after teleporting out, so
+// the next single-floor dungeon generated floor-2 rooms and crashed in
+// scr_dungeonChangeNodeRole -> ds_unique_object_get. Outside a generated dungeon room a
+// non-zero value can never be valid, so reset it (and the derived locationFloor).
+// 旧版本传送出地牢后会把 global.floor_counter 留成 1/2 带回地表，之后进单层地牢会按第
+// 2 层取房间池，崩在 scr_dungeonChangeNodeRole -> ds_unique_object_get。不在程序生成
+// 的地牢房里时，非 0 只可能是残留值，直接归零（并同步派生的 locationFloor）。
+if (variable_global_exists("floor_counter") && global.floor_counter != 0)
+{
+    if (global.playerGridX != -4 && global.playerGridY != -4 && !instance_exists(o_dungeon_controller))
+    {
+        global.floor_counter = 0;
+
+        if (variable_global_exists("locationFloor"))
+            global.locationFloor = 0;
+    }
+}
+
 // ---- Idle (world map not open) ----------------------------------------------------
 // ---- 空闲（大地图未打开）----------------------------------------------------------
 if (!instance_exists(o_globalmap))
@@ -82,6 +102,17 @@ if (!instance_exists(o_globalmap))
 
 if (!variable_global_exists("guiMouseX"))
     exit;
+
+// The journal embeds its own small map; clicks there must never teleport, and the
+// offset/scale math below is only valid for the fullscreen world map.
+// 日志里内嵌的是小地图：那里的点击不应触发传送（下面的偏移/缩放换算只适用于全屏大地图）。
+var _mapInstance = instance_find(o_globalmap, 0);
+if (instance_exists(_mapInstance) && _mapInstance.journal != -4)
+{
+    menuOpen = false;
+    down = false;
+    exit;
+}
 
 // ---- Menu open: handle clicks -----------------------------------------------------
 // ---- 菜单已打开：处理点击 ----------------------------------------------------------
@@ -148,6 +179,17 @@ var _can = _inBounds && scr_msl_maptp_can_enter(_gx, _gy);
 
 if (!_inBounds)
     exit;
+
+// No menu inside a dungeon: teleporting out would leave global.floor_counter stale and
+// break the next dungeon's floor selection (see scr_msl_maptp_begin).
+// 地牢内不弹菜单：传送出去会把 global.floor_counter 留成错层，破坏之后的地牢楼层选择
+// （详见 scr_msl_maptp_begin）。
+if (variable_global_exists("floor_counter") && global.floor_counter != 0)
+{
+    notice = scr_msl_maptp_tr("in_dungeon");
+    noticeTimer = 90;
+    exit;
+}
 
 if (!_can)
 {

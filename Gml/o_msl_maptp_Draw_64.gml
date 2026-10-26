@@ -19,6 +19,20 @@ if (phase != -1)
 if (!instance_exists(o_globalmap))
     exit;
 
+// The journal embeds its own small map: no teleport UI there.
+// 日志里内嵌的是小地图：不显示传送界面。
+var _mapInstance = instance_find(o_globalmap, 0);
+if (instance_exists(_mapInstance) && _mapInstance.journal != -4)
+    exit;
+
+// Inside a dungeon the mod is inactive: show the reason instead of the teleport hint.
+// 地牢内本模组不生效：显示原因，而不是“左键：传送”。
+if (variable_global_exists("floor_counter") && global.floor_counter != 0)
+{
+    scr_drawText(_camX + 12, _camY + 16, scr_msl_maptp_tr("in_dungeon"), make_color_rgb(190, 170, 140), 0, 1, global.f_dmg, 0.5, 0.8);
+    exit;
+}
+
 // Optional top-left notice (errors / hints).
 // 左上角可选提示（错误/提示）。
 if (noticeTimer > 0 && notice != "")

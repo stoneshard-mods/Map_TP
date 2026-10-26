@@ -81,6 +81,13 @@ function scr_msl_maptp_tr(_key)
             if (_lang == "ko") return "월드 맵이 아닙니다";
             return "Not on the world map";
 
+        case "in_dungeon":
+            if (_lang == "zh") return "地牢内无法传送";
+            if (_lang == "ru") return "В подземелье телепорт недоступен";
+            if (_lang == "ja") return "ダンジョン内では転送できません";
+            if (_lang == "ko") return "던전 안에서는 이동할 수 없습니다";
+            return "Cannot teleport inside a dungeon";
+
         case "here":
             if (_lang == "zh") return "已经在这一格";
             if (_lang == "ru") return "Вы уже здесь";

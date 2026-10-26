@@ -32,6 +32,22 @@ function scr_msl_maptp_begin(_gxIn, _gyIn, _cornerIn)
         return;
     }
 
+    // Never teleport while inside a dungeon.
+    // 地牢内禁止传送。
+    // The game only changes global.floor_counter on stairs (c_dungeon_enter / stair
+    // transitions), so teleporting out would leave it at 1/2 on the surface; the next
+    // single-floor dungeon would then pick the floor-2 room pool and crash in
+    // scr_dungeonChangeNodeRole -> ds_unique_object_get. Refuse instead of poisoning it.
+    // 游戏只在楼梯处改 global.floor_counter（c_dungeon_enter / 楼梯过渡），传送出去会把它
+    // 留在 1/2 带回地表；之后进单层地牢会按第 2 层取房间池，崩在
+    // scr_dungeonChangeNodeRole -> ds_unique_object_get。因此这里直接拒绝，避免污染状态。
+    if (variable_global_exists("floor_counter") && global.floor_counter != 0)
+    {
+        notice = scr_msl_maptp_tr("in_dungeon");
+        noticeTimer = 120;
+        return;
+    }
+
     // Already at the target tile: nothing to do.
     // 已在该目标格：无需传送。
     if (global.playerGridX == _gx && global.playerGridY == _gy)
