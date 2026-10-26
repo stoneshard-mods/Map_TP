@@ -20,8 +20,10 @@ public class MapTP : Mod
 {
     public override string Name => "Map_TP";
     public override string Author => "Pixel32E-QQ:3566723459";
-    public override string Description => "大地图左键打开二级菜单，按落点（房间四角）传送到选中的世界格；菜单支持中/英双语";
-    public override string ShortDesc => "Teleport from the world map through real room transitions (Chinese/English UI)";
+    // Description: long text shown in the mod list (Chinese, the authoring language).
+    // 描述：模组列表里的长文本（中文）。
+    public override string Description => "大地图左键打开二级菜单，按落点（房间四角）传送到选中的世界格；支持中/英/俄/日/韩界面；地牢内不可传送（避免破坏游戏的地牢层数）";
+    public override string ShortDesc => "Teleport from the world map through real room transitions. Five UI languages; teleporting is disabled inside dungeons so the game's floor counter stays consistent.";
     public override string Version => "v0.5.0.0";
 
     // Keep the controller alive while the world map is open.
