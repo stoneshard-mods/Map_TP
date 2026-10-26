@@ -73,19 +73,39 @@ if (phase == 4)
 // ---- 旧存档修复：地表残留的地牢层数 ------------------------------------------------
 // Older builds left global.floor_counter at the dungeon floor after teleporting out, so
 // the next single-floor dungeon generated floor-2 rooms and crashed in
-// scr_dungeonChangeNodeRole -> ds_unique_object_get. Outside a generated dungeon room a
-// non-zero value can never be valid, so reset it (and the derived locationFloor).
+// scr_dungeonChangeNodeRole -> ds_unique_object_get.
+// Only reset it when we are provably on a surface room:
+//   - not inside a generated dungeon (no o_dungeon_controller),
+//   - no room change pending (o_smoothRoomChanger). This is essential: stepping onto a
+//     dungeon entrance increments floor_counter while the player is still standing in the
+//     surface entrance room during the fade-out. Resetting there makes the dungeon
+//     generate floor 1 with counter 0, so the up-stairs on the real floor 2 send the
+//     player outside (target_room = scr_globaltile_get_room()).
+//   - standing in the room owned by the current world tile (dungeon interiors never are).
 // 旧版本传送出地牢后会把 global.floor_counter 留成 1/2 带回地表，之后进单层地牢会按第
-// 2 层取房间池，崩在 scr_dungeonChangeNodeRole -> ds_unique_object_get。不在程序生成
-// 的地牢房里时，非 0 只可能是残留值，直接归零（并同步派生的 locationFloor）。
+// 2 层取房间池，崩在 scr_dungeonChangeNodeRole -> ds_unique_object_get。
+// 只有确认在地表房间时才归零：
+//   - 不在程序生成的地牢房里（无 o_dungeon_controller）；
+//   - 没有正在进行的换房间（o_smoothRoomChanger）。这条最关键：踩上地牢入口时层数已经 +1，
+//     但人会在地牢入口房间停留约 15 帧淡出；此时归零会让地牢按第 1 层生成、层数却留在 0，
+//     真正到 2 层后上楼就会被判定成“在 1 层”而直接送出入口房间；
+//   - 所站房间就是当前世界格记录的房间（地牢内部永远不匹配）。
 if (variable_global_exists("floor_counter") && global.floor_counter != 0)
 {
-    if (global.playerGridX != -4 && global.playerGridY != -4 && !instance_exists(o_dungeon_controller))
+    if (global.playerGridX != -4 && global.playerGridY != -4
+        && !instance_exists(o_dungeon_controller)
+        && !instance_exists(o_smoothRoomChanger)
+        && !instance_exists(o_biome_generation_controller))
     {
-        global.floor_counter = 0;
+        var _tileRoom = scr_globaltile_get_room();
 
-        if (variable_global_exists("locationFloor"))
-            global.locationFloor = 0;
+        if (_tileRoom > 0 && _tileRoom == room)
+        {
+            global.floor_counter = 0;
+
+            if (variable_global_exists("locationFloor"))
+                global.locationFloor = 0;
+        }
     }
 }
 
